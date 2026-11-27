@@ -660,56 +660,74 @@
             }
         }
 
-        /* ABA AUTO: preenchimento e consulta lado a lado */
+        /* ABA AUTO: layout responsivo e organizado */
         #form-fields:has(.field-panel[data-panel-content="auto"].active) {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            grid-template-columns: minmax(260px, .85fr) minmax(320px, 1.15fr);
             align-items: start;
-            gap: 10px;
+            gap: 14px;
         }
-        #form-fields:has(.field-panel[data-panel-content="auto"].active) > [data-panel-content="auto"] {
+        #form-fields:has(.field-panel[data-panel-content="auto"].active") > [data-panel-content="auto"] {
             min-width: 0;
             margin: 0;
         }
-        #form-fields:has(.field-panel[data-panel-content="auto"].active) #autofill-text {
-            min-height: 180px !important;
-            height: 180px !important;
-        }
-        #form-fields:has(.field-panel[data-panel-content="auto"].active) #lookup-report {
-            min-height: 180px !important;
-            height: 180px !important;
-        }
-        #form-fields:has(.field-panel[data-panel-content="auto"].active) .lookup-panel input {
+        #form-fields:has(.field-panel[data-panel-content="auto"].active) .field-panel,
+        #form-fields:has(.field-panel[data-panel-content="auto"].active) .lookup-panel {
             box-sizing: border-box;
             width: 100%;
+            padding: 16px !important;
+            border-radius: 12px;
         }
-        #form-fields:has(.field-panel[data-panel-content="auto"].active) .lookup-panel h3,
-        #form-fields:has(.field-panel[data-panel-content="auto"].active) .field-panel h3 {
-            min-height: 34px;
+        #form-fields:has(.field-panel[data-panel-content="auto"].active) .lookup-help {
+            line-height: 1.45;
+            margin: 5px 0 10px;
         }
-        @media (max-width: 560px) {
+        #form-fields:has(.field-panel[data-panel-content="auto"].active) #autofill-text {
+            box-sizing: border-box;
+            width: 100%;
+            height: 190px !important;
+            min-height: 190px !important;
+        }
+        #form-fields:has(.field-panel[data-panel-content="auto"].active) #lookup-report {
+            box-sizing: border-box;
+            width: 100%;
+            height: 145px !important;
+            min-height: 145px !important;
+        }
+        #form-fields:has(.field-panel[data-panel-content="auto"].active) #lookup-summary {
+            box-sizing: border-box;
+            width: 100%;
+            height: 190px !important;
+            min-height: 190px !important;
+        }
+        #form-fields:has(.field-panel[data-panel-content="auto"].active) .lookup-panel h4 {
+            margin: 12px 0 6px !important;
+            line-height: 1.35;
+        }
+        #form-fields:has(.field-panel[data-panel-content="auto"].active) .lookup-panel button,
+        #form-fields:has(.field-panel[data-panel-content="auto"].active) .btn-save {
+            min-height: 42px;
+        }
+        @media (max-width: 760px) {
             #form-fields:has(.field-panel[data-panel-content="auto"].active) {
-                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-                gap: 8px;
+                grid-template-columns: minmax(0, 1fr);
+                gap: 12px;
             }
-            #form-fields:has(.field-panel[data-panel-content="auto"].active) > [data-panel-content="auto"] {
-                padding: 9px !important;
+            #form-fields:has(.field-panel[data-panel-content="auto"].active) .field-panel,
+            #form-fields:has(.field-panel[data-panel-content="auto"].active) .lookup-panel {
+                padding: 14px !important;
             }
-            #form-fields:has(.field-panel[data-panel-content="auto"].active) .lookup-help {
-                font-size: 10px !important;
-                line-height: 1.35;
+            #form-fields:has(.field-panel[data-panel-content="auto"].active) #autofill-text {
+                height: 150px !important;
+                min-height: 150px !important;
             }
-            #form-fields:has(.field-panel[data-panel-content="auto"].active) #autofill-text,
             #form-fields:has(.field-panel[data-panel-content="auto"].active) #lookup-report {
-                height: 160px !important;
-                min-height: 160px !important;
-                font-size: 10px !important;
-                padding: 7px !important;
+                height: 125px !important;
+                min-height: 125px !important;
             }
-            #form-fields:has(.field-panel[data-panel-content="auto"].active) .lookup-panel button,
-            #form-fields:has(.field-panel[data-panel-content="auto"].active) .btn-save {
-                font-size: 10px !important;
-                padding: 9px 5px !important;
+            #form-fields:has(.field-panel[data-panel-content="auto"].active) #lookup-summary {
+                height: 165px !important;
+                min-height: 165px !important;
             }
         }
         /* PAINÉIS COMPACTOS: melhor aproveitamento da tela */
