@@ -510,13 +510,6 @@
         }
 
 
-        .lookup-right-report { display:none; width:min(100%,900px); min-height:760px; padding:28px; background:#fff; border:1px solid #dce4ee; border-radius:14px; box-shadow:0 16px 45px rgba(0,0,0,.18); color:#172338; }
-        .preview-area.has-lookup-report .document-container { display:none; }
-        .preview-area.has-lookup-report .lookup-right-report { display:block; }
-        .lookup-right-report h2 { margin:0 0 6px; color:#123b67; font-size:22px; }
-        .lookup-right-report p { margin:0 0 18px; color:#64748b; font-size:12px; }
-        .lookup-right-report textarea { width:100%; min-height:650px; resize:vertical; border:1px solid #cbd5e1; border-radius:9px; padding:16px; color:#172338; background:#fbfdff; font:13px/1.65 ui-monospace,Consolas,monospace; white-space:pre-wrap; }
-        .lookup-right-report textarea:focus { outline:none; border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59,130,246,.12); }
         /* Consulta veicular independente — não altera a prévia do documento */
         .lookup-panel { display:none; background:#fff; border:1px solid var(--border); border-radius:12px; padding:17px; margin-bottom:14px; }
         .lookup-panel.active { display:block; }
@@ -794,12 +787,7 @@ function downloadPDF() {
         </div>
     </div>
 
-    <div class="preview-area" id="preview-area">
-        <section class="lookup-right-report" id="lookup-right-report" aria-label="Relatório informativo da consulta veicular">
-            <h2>Relatório da consulta veicular</h2>
-            <p>Informações retornadas pela consulta. Relatório informativo, não oficial. Dados pessoais do proprietário são omitidos.</p>
-            <textarea id="lookup-right-text" aria-label="Relatório da consulta exibido à direita" spellcheck="false" placeholder="Consulte uma placa para visualizar o relatório aqui."></textarea>
-        </section>
+    <div class="preview-area">
         <div class="document-container" id="printable">
 
             <img src="lore2.0bgzada.png" class="pdf-bg" onerror="this.style.display='none'">
@@ -996,11 +984,6 @@ function downloadPDF() {
                 const report = document.getElementById('lookup-report');
                 const textoRelatorio = reportLines.join('\n');
                 if (report) report.value = textoRelatorio;
-                const rightReport = document.getElementById('lookup-right-text');
-                const previewArea = document.getElementById('preview-area');
-                if (rightReport) rightReport.value = textoRelatorio;
-                if (previewArea) previewArea.classList.add('has-lookup-report');
-
                 status.textContent = 'Consulta concluída. Relatório exibido no painel à direita. ' + campos.length + ' informações encontradas.';
             } catch (error) {
                 status.textContent = 'Não foi possível concluir a consulta: ' + (error?.message || 'erro desconhecido') + ' Verifique o token, a placa e a disponibilidade da API.';
