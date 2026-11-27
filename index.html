@@ -561,21 +561,28 @@
         @media (max-width:560px) { .lookup-results { grid-template-columns:1fr 1fr; } }
 
     
-        /* Identificação da prévia: nome somente na tela */
+        /* Marca profissional da prévia — aparece somente na tela */
         .document-container::before {
             content: "DESPACHANTE LUIZ";
             position: absolute;
-            inset: 0;
             z-index: 29;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            color: rgba(23, 62, 103, .16);
-            font: 900 25px/1.2 Arial, sans-serif;
-            letter-spacing: 2px;
+            left: 50%;
+            top: 50%;
+            display: block;
+            width: max-content;
+            max-width: 88%;
+            box-sizing: border-box;
+            padding: 13px 24px;
+            border: 3px solid rgba(185, 28, 28, .48);
+            border-radius: 5px;
+            color: rgba(185, 28, 28, .42);
+            background: rgba(255, 255, 255, .10);
+            font: 900 28px/1.15 Arial, Helvetica, sans-serif;
+            letter-spacing: 3px;
             text-align: center;
-            transform: rotate(-32deg);
+            white-space: nowrap;
+            text-shadow: 0 1px 0 rgba(255,255,255,.22);
+            transform: translate(-50%, -50%) rotate(-24deg);
             pointer-events: none;
             user-select: none;
         }
