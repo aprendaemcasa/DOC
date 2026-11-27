@@ -600,6 +600,9 @@
             <div id="lookup-status" class="lookup-status" role="status" aria-live="polite"></div>
             <h4 style="margin:16px 0 8px;color:#334155;font-size:12px;">Informações da consulta — editáveis</h4>
             <div id="lookup-results" class="lookup-results"></div>
+            <h4 style="margin:16px 0 8px;color:#334155;font-size:12px;">Relatório da consulta — editável</h4>
+            <p class="lookup-help">O relatório é gerado automaticamente com os dados veiculares e pode ser revisado e editado. Dados pessoais do proprietário são omitidos.</p>
+            <textarea id="lookup-report" rows="22" spellcheck="false" aria-label="Relatório editável da consulta" placeholder="O relatório da consulta aparecerá aqui..." style="width:100%;min-height:360px;padding:12px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#172338;font:12px/1.55 ui-monospace,Consolas,monospace;resize:vertical;"></textarea>
             <h4 style="margin:16px 0 8px;color:#334155;font-size:12px;">Campos manuais</h4>
             <div class="lookup-results">
                 <label class="lookup-result"><span>Exercício</span><input id="lookup-exercicio" type="text" inputmode="numeric" placeholder="Digite o exercício" aria-label="Exercício"></label>
@@ -917,6 +920,70 @@ function downloadPDF() {
                     card.append(title, content);
                     results.append(card);
                 }
+                const get = (...keys) => {
+                    for (const key of keys) {
+                        const value = registro[key];
+                        if (value !== undefined && value !== null && String(value).trim() !== '') return String(value).trim();
+                    }
+                    return '-';
+                };
+                const yesNo = (...keys) => get(...keys);
+                const anoFab = get('anoFabricacao', 'ano_fabricacao');
+                const anoMod = get('anoModelo', 'ano_modelo');
+                const reportLines = [
+                    '🚙 DADOS DO VEÍCULO 🚙',
+                    'Placa: ' + get('placa'),
+                    'Chassi: ' + get('chassi', 'numeroChassi'),
+                    'Renavam: ' + get('codigoRenavam', 'renavam'),
+                    'Situação: ' + get('descricaoSituacao', 'situacao', 'situacaoVeiculo'),
+                    'Modelo: ' + get('descricaoMarcaModelo', 'marcaModelo', 'modelo'),
+                    'Tipo: ' + get('descricaoTipoVeiculo', 'tipoVeiculo'),
+                    'Cor: ' + get('descricaoCor', 'cor'),
+                    'Categoria: ' + get('descricaoCategoria', 'categoria'),
+                    'Ano Fab/Mod: ' + anoFab + ' / ' + anoMod,
+                    'Combustível: ' + get('descricaoCombustivel', 'combustivel'),
+                    'Potência: ' + get('potencia'),
+                    'Cilindradas: ' + get('cilindradas'),
+                    'Lotação: ' + get('lotacao'),
+                    'Número do Motor: ' + get('numeroMotor', 'motor'),
+                    'Carroceria: ' + get('descricaoCarroceria', 'carroceria'),
+                    'Emplacamento: ' + get('municipioEmplacamento', 'municipio') + '/' + get('ufEmplacamento', 'uf'),
+                    '',
+                    '🚢 IMPORTAÇÃO 🚢',
+                    'Procedência: ' + get('descricaoProcedencia', 'procedencia'),
+                    'Importador: ' + get('nomeImportador', 'importador'),
+                    'País Transferência: ' + get('paisTransferencia'),
+                    'Processo: ' + get('numeroProcesso', 'processo'),
+                    '',
+                    '⛔ RESTRIÇÕES & INDICADORES ⛔',
+                    'Restrição 1: ' + get('restricao1', 'descricaoRestricao1'),
+                    'Restrição 2: ' + get('restricao2', 'descricaoRestricao2'),
+                    'Restrição 3: ' + get('restricao3', 'descricaoRestricao3'),
+                    'Restrição 4: ' + get('restricao4', 'descricaoRestricao4'),
+                    'Multa Renainf: ' + yesNo('indicadorMultaRenainf', 'multaRenainf'),
+                    'Renajud: ' + yesNo('indicadorRenajud', 'renajud'),
+                    'Comunicação Venda: ' + yesNo('indicadorComunicacaoVenda', 'comunicacaoVenda'),
+                    'Roubo/Furto: ' + yesNo('indicadorRouboFurto', 'rouboFurto'),
+                    'Leilão: ' + yesNo('indicadorLeilao', 'leilao'),
+                    'Pendência Emissão: ' + yesNo('indicadorPendenciaEmissao', 'pendenciaEmissao'),
+                    'Alarme: ' + yesNo('indicadorAlarme', 'alarme'),
+                    '',
+                    '📄 DOCUMENTOS 📄',
+                    'Data Emissão CRV: ' + get('dataEmissaoCRV', 'dataEmissaoCrv'),
+                    'CRLV Nº: ' + get('numeroCRLV', 'numeroCrlv'),
+                    'Ano Licenciamento: ' + get('anoLicenciamento'),
+                    '',
+                    'ℹ️ OUTROS ℹ️',
+                    'Serviço Consultado: ' + get('servicoConsultado', 'servico'),
+                    'Restrição RFB: ' + get('restricaoRFB', 'restricaoRfb'),
+                    'Recall 1: ' + get('recall1'),
+                    'Recall 2: ' + get('recall2'),
+                    'Recall 3: ' + get('recall3'),
+                    'Recall 4: ' + get('recall4')
+                ];
+                const report = document.getElementById('lookup-report');
+                if (report) report.value = reportLines.join('\\n');
+
                 status.textContent = 'Consulta concluída. ' + campos.length + ' informações encontradas.';
             } catch (error) {
                 status.textContent = 'Não foi possível concluir a consulta: ' + (error?.message || 'erro desconhecido') + ' Verifique o token, a placa e a disponibilidade da API.';
