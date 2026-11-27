@@ -811,6 +811,8 @@
             <h4 style="margin:16px 0 8px;color:#334155;font-size:12px;">Relatório da consulta — editável</h4>
             <p class="lookup-help">O relatório é gerado automaticamente com os dados veiculares e pode ser revisado e editado. Dados pessoais do proprietário são omitidos.</p>
             <textarea id="lookup-report" rows="22" spellcheck="false" aria-label="Relatório editável da consulta" placeholder="O relatório da consulta aparecerá aqui..." style="width:100%;min-height:360px;padding:12px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#172338;font:12px/1.55 ui-monospace,Consolas,monospace;resize:vertical;"></textarea>
+            <h4 style="margin:14px 0 8px;color:#1e3a5f;font-size:12px;">Resumo técnico formatado — consulta informativa</h4>
+            <textarea id="lookup-summary" readonly aria-label="Resumo técnico formatado da consulta" placeholder="O resumo técnico será montado após consultar a placa." style="box-sizing:border-box;width:100%;height:220px;min-height:220px;padding:10px;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;color:#172338;font:11px/1.55 ui-monospace,Consolas,monospace;resize:vertical;"></textarea>
 
             <div class="lookup-warning">Privacidade: esta tela não exibe nome, CPF/CNPJ, endereço ou dados do proprietário. O token digitado no navegador pode ser visto por quem usa as ferramentas de desenvolvedor/rede; para um site público, o mais seguro é usar um intermediário no servidor.</div>
         </section>
@@ -1188,6 +1190,29 @@ function downloadPDF() {
                 const report = document.getElementById('lookup-report');
                 const textoRelatorio = reportLines.join('\n');
                 if (report) report.value = textoRelatorio;
+
+                // Resumo técnico separado; não inclui dados pessoais do proprietário.
+                const summaryFields = [
+                    ['⚙️ RENAVAM', get('codigoRenavam', 'renavam')],
+                    ['⚠️ PLACA', get('placa')],
+                    ['🏭 ANO FABRICAÇÃO', anoFab],
+                    ['🏭 ANO MODELO', anoMod],
+                    ['✅ MARCA MODELO', get('descricaoMarcaModelo', 'marcaModelo', 'modelo')],
+                    ['🚙 ESPÉCIE / TIPO', get('descricaoEspecieVeiculo', 'especie') + ' ' + get('descricaoTipoVeiculo', 'tipoVeiculo')],
+                    ['🔧 CHASSI', get('chassi', 'numeroChassi')],
+                    ['🎨 COR', get('descricaoCor', 'cor')],
+                    ['⛽ COMBUSTÍVEL', get('descricaoCombustivel', 'combustivel')],
+                    ['📂 CATEGORIA', get('descricaoCategoria', 'categoria')],
+                    ['⚡ CILINDRADA', get('cilindradas')],
+                    ['💪 POTÊNCIA', get('potencia')],
+                    ['🔩 MOTOR', get('numeroMotor', 'motor')],
+                    ['👥 LOTAÇÃO', get('lotacao')],
+                    ['🧳 CARROCERIA', get('descricaoCarroceria', 'carroceria')]
+                ];
+                const summary = document.getElementById('lookup-summary');
+                if (summary) summary.value = summaryFields.map(([label, value]) => label + ': ' + value).join('\n')
+                    + '\n\nℹ️ RESUMO TÉCNICO INFORMATIVO — DADOS DO PROPRIETÁRIO NÃO EXIBIDOS.';
+
                 const sheetReport = document.getElementById('info-sheet-report');
                 if (sheetReport) sheetReport.value = textoRelatorio;
                 status.textContent = 'Consulta concluída. Relatório exibido no painel à direita. ' + campos.length + ' informações encontradas.';
