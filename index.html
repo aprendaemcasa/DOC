@@ -449,6 +449,36 @@
         }
 
     
+
+        /* Ficha técnica independente exibida no painel direito */
+        .technical-sheet {
+            width: min(760px, 100%);
+            min-height: 620px;
+            margin: 0 auto;
+            padding: 30px;
+            border: 1px solid #dbe4ef;
+            border-radius: 18px;
+            background: #fff;
+            color: #172338;
+            box-shadow: 0 18px 50px rgba(0,0,0,.22);
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+        }
+        .technical-sheet-head { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; padding-bottom:20px; border-bottom:2px solid #dce6f1; }
+        .technical-kicker { color:#2563eb; font-size:10px; font-weight:900; letter-spacing:1.5px; }
+        .technical-sheet-head h1 { margin:7px 0 5px; color:#123b67; font-size:25px; }
+        .technical-sheet-head p { margin:0; color:#64748b; font-size:12px; }
+        .technical-stamp { flex:none; padding:8px 10px; border:1px solid #b45309; border-radius:6px; color:#92400e; background:#fff7ed; font-size:9px; font-weight:900; text-align:center; }
+        .technical-highlight { margin:18px 0; padding:14px 16px; border-radius:10px; background:#eff6ff; color:#1e3a5f; font-size:15px; font-weight:800; }
+        .technical-sheet-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+        .technical-item { min-width:0; padding:12px 13px; border:1px solid #e2e8f0; border-radius:9px; background:#f8fafc; }
+        .technical-item span { display:block; margin-bottom:6px; color:#64748b; font-size:9px; font-weight:900; letter-spacing:.55px; }
+        .technical-item strong { display:block; color:#172338; font-size:13px; overflow-wrap:anywhere; }
+        .technical-empty { grid-column:1/-1; padding:30px; color:#64748b; text-align:center; }
+        .technical-sheet-foot { margin-top:22px; padding-top:12px; border-top:1px solid #e2e8f0; color:#64748b; font-size:10px; line-height:1.5; text-align:center; }
+        .document-container { display:none !important; }
+        @media(max-width:1100px) { .technical-sheet { width:100%; padding:22px; } }
+        @media(max-width:560px) { .technical-sheet-head { flex-direction:column; } .technical-sheet-head h1 { font-size:21px; } .technical-sheet-grid { grid-template-columns:1fr; } }
+
         /* PREVIEW ORIGINAL PRESERVADO: não alterar escala, proporção ou tipografia do documento */
         .preview-area {
             flex: 1 1 auto;
@@ -997,6 +1027,21 @@ function downloadPDF() {
     </div>
 
     <div class="preview-area">
+        <section class="technical-sheet" aria-label="Ficha técnica informativa do veículo">
+            <header class="technical-sheet-head">
+                <div>
+                    <span class="technical-kicker">RELATÓRIO INFORMATIVO</span>
+                    <h1>Ficha técnica do veículo</h1>
+                    <p>Características técnicas organizadas a partir dos dados fornecidos</p>
+                </div>
+                <span class="technical-stamp">SEM VALIDADE OFICIAL</span>
+            </header>
+            <div class="technical-highlight" id="technical-highlight">Cole os dados na aba “Auto preencher” e clique em “Gerar ficha técnica”.</div>
+            <div class="technical-sheet-grid" id="technical-sheet-grid">
+                <div class="technical-empty">Aguardando dados técnicos do veículo…</div>
+            </div>
+            <footer class="technical-sheet-foot">Ficha informativa independente — não é documento oficial e não substitui consulta aos órgãos competentes.</footer>
+        </section>
         <div class="document-container" id="printable">
 
             <img src="PDF-e3_2.png" class="pdf-bg" onerror="this.style.display='none'">
@@ -1491,44 +1536,56 @@ function downloadPDF() {
             const potenciaCilindrada = potencia && cilindrada
                 ? (potencia.includes('/') ? potencia : potencia + ' / ' + cilindrada)
                 : (potencia || cilindrada);
-            const cidadeUf = get('CIDADE/UF', 'MUNICIPIO/UF', 'MUNICIPIO', 'LOCAL DE EMISSAO', 'EMPLACAMENTO');
-            const linhas = [
+            const campos = [
                 ['MARCA / MODELO', get('MARCA MODELO', 'MARCA/MODELO', 'DESCRICAO MARCA MODELO', 'MARCA E MODELO')],
                 ['ANO DE FABRICAÇÃO', anoFab],
                 ['ANO DO MODELO', anoMod],
                 ['ESPÉCIE / TIPO', especieTipo],
                 ['COR PREDOMINANTE', get('COR', 'COR PREDOMINANTE')],
                 ['COMBUSTÍVEL', get('COMBUSTIVEL', 'COMBUSTIVEL VEICULO')],
-                ['CATEGORIA DE USO', get('CATEGORIA', 'CATEGORIA USO')],
+                ['CATEGORIA', get('CATEGORIA', 'CATEGORIA USO')],
                 ['CAPACIDADE', get('CAPACIDADE', 'CAPACIDADE PASSAGEIROS')],
                 ['POTÊNCIA / CILINDRADA', potenciaCilindrada],
                 ['PESO BRUTO TOTAL', get('PESO BRUTO TOTAL', 'PBT', 'PESO BRUTO')],
-                ['MOTOR — DESCRIÇÃO TÉCNICA', get('MOTOR', 'TIPO MOTOR')],
+                ['MOTOR — DADOS TÉCNICOS', get('MOTOR', 'TIPO MOTOR')],
                 ['CMT', get('CMT')],
                 ['EIXOS', get('EIXOS', 'NUMERO DE EIXOS')],
                 ['LOTAÇÃO', get('LOTACAO', 'QUANTIDADE DE PASSAGEIROS', 'CAPACIDADE PASSAGEIROS')],
                 ['CARROCERIA', get('CARROCERIA', 'TIPO CARROCERIA')],
-                ['MUNICÍPIO / UF DE REFERÊNCIA', cidadeUf],
+                ['MUNICÍPIO / UF', get('CIDADE/UF', 'MUNICIPIO/UF', 'MUNICIPIO', 'LOCAL DE EMISSAO', 'EMPLACAMENTO')],
                 ['DATA DE REFERÊNCIA', get('DATA EMISSAO', 'DATA DE EMISSAO', 'DATA')],
                 ['OBSERVAÇÕES TÉCNICAS', get('OBSERVACOES', 'OBSERVACAO', 'OBSERVACOES DO VEICULO')]
             ];
+            const grid = document.getElementById('technical-sheet-grid');
             const resumo = document.getElementById('lookup-summary');
+            const highlight = document.getElementById('technical-highlight');
             if (!raw.trim()) {
-                if (resumo) resumo.value = 'Cole os dados técnicos do veículo no campo acima e clique em GERAR FICHA TÉCNICA.';
+                if (grid) grid.innerHTML = '<div class="technical-empty">Cole os dados técnicos na aba “Auto preencher” e tente novamente.</div>';
+                if (resumo) resumo.value = 'Cole os dados técnicos do veículo e clique em GERAR FICHA TÉCNICA.';
                 const statusVazio = document.getElementById('lookup-status');
                 if (statusVazio) statusVazio.textContent = 'Nenhum dado foi informado.';
                 return;
             }
+            const valor = v => String(v || '').trim() || 'Não informado';
+            if (grid) {
+                grid.innerHTML = campos.map(([label, value]) =>
+                    '<div class="technical-item"><span>' + label + '</span><strong>' + valor(value).replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch])) + '</strong></div>'
+                ).join('');
+            }
+            if (highlight) {
+                const marca = get('MARCA MODELO', 'MARCA/MODELO', 'DESCRICAO MARCA MODELO', 'MARCA E MODELO');
+                highlight.textContent = marca ? marca : 'Ficha técnica do veículo — dados organizados';
+            }
             if (resumo) {
                 resumo.value = 'FICHA TÉCNICA INFORMATIVA DO VEÍCULO\\n\\n'
-                    + linhas.map(([label, value]) => label + ': ' + (String(value || '').trim() || 'Não informado')).join('\\n')
-                    + '\\n\\nDocumento informativo independente. Não é CRLV-e nem possui validade oficial.';
+                    + campos.map(([label, value]) => label + ': ' + valor(value)).join('\\n')
+                    + '\\n\\nFicha informativa independente — não é documento oficial.';
             }
             const status = document.getElementById('lookup-status');
-            if (status) status.textContent = 'Ficha técnica gerada. Os campos técnicos identificados foram organizados; dados ausentes aparecem como “Não informado”.';
+            if (status) status.textContent = 'Ficha técnica exibida no painel à direita.';
             const toast = document.getElementById('autofill-toast');
             if (toast) {
-                toast.textContent = 'Ficha técnica gerada com os campos técnicos disponíveis.';
+                toast.textContent = 'Ficha técnica preenchida no painel à direita.';
                 toast.style.display = 'block';
                 setTimeout(() => { toast.style.display = 'none'; }, 3500);
             }
