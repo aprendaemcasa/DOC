@@ -441,6 +441,74 @@
             .preview-area { min-height: 620px; padding: 18px 10px 30px; }
         }
 
+    
+        /* PREVIEW ORIGINAL PRESERVADO: não alterar escala, proporção ou tipografia do documento */
+        .preview-area {
+            flex: 1 1 auto;
+            min-width: 0;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow: auto;
+            background: #444;
+            box-sizing: border-box;
+            padding-bottom: 80px;
+        }
+        .document-container {
+            position: relative;
+            flex: 0 0 794px;
+            width: 794px;
+            min-width: 794px;
+            max-width: 794px;
+            height: 1123px;
+            min-height: 1123px;
+            max-height: 1123px;
+            background: #fff;
+            border-radius: 0;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            transform: none;
+            zoom: 1;
+        }
+        .pdf-bg { width: 100%; height: auto; display: block; }
+        .overlay-text {
+            font-family: 'FreeMonoCRLV', 'FreeMono', 'Liberation Mono', 'Courier New', monospace;
+            font-size: 13.333px;
+            line-height: 1;
+            font-weight: 700;
+            letter-spacing: 0;
+            transform: translateY(-2px);
+        }
+        .static-pdf-label {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 9.1px;
+            line-height: 1;
+            letter-spacing: 0;
+        }
+        @media (max-width: 1100px) {
+            .preview-area {
+                width: 100%;
+                min-height: 0;
+                padding: 24px 16px 40px;
+                justify-content: flex-start;
+                align-items: flex-start;
+                overflow-x: auto;
+                overflow-y: auto;
+                background: #444;
+            }
+            .document-container {
+                flex: 0 0 794px;
+                width: 794px;
+                min-width: 794px;
+                max-width: 794px;
+                height: 1123px;
+            }
+        }
+        @media (max-width: 560px) {
+            .preview-area { min-height: 0; padding: 18px 10px 30px; }
+            .document-container { flex: 0 0 794px; width: 794px; min-width: 794px; }
+        }
+
     </style>
 </head>
 <body>
