@@ -184,7 +184,7 @@
             justify-content: center;
             align-items: flex-start;
             overflow-y: auto;
-            background: #444 url("fundo-azul-ciano.jpg") center center / cover fixed no-repeat;
+            background: #444;
             box-sizing: border-box;
             padding-bottom: 80px;
         }
@@ -197,8 +197,15 @@
         }
         .pdf-bg {
             width: 100%;
+            height: 100%;
+            object-fit: cover;
             display: block;
+            position: absolute;
+            inset: 0;
+            z-index: 0;
             user-select: none;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
 
         .overlay-text {
@@ -400,7 +407,7 @@
         .preview-area {
             min-width: 0;
             padding: 34px;
-            background: #444 url("fundo-azul-ciano.jpg") center center / cover fixed no-repeat;
+            background: #444;
             align-items: flex-start;
         }
         .document-container {
@@ -451,7 +458,7 @@
             justify-content: center;
             align-items: flex-start;
             overflow: auto;
-            background: #444 url("fundo-azul-ciano.jpg") center center / cover fixed no-repeat;
+            background: #444;
             box-sizing: border-box;
             padding-bottom: 80px;
         }
@@ -826,7 +833,7 @@ function downloadPDF() {
     <div class="preview-area">
         <div class="document-container" id="printable">
 
-            <img src="fundo-ficha-informativa.png" class="pdf-bg" onerror="this.style.display='none'">
+            <img src="fundo-azul-ciano.jpg" class="pdf-bg" onerror="this.style.display='none'">
 
             <div id="pv-renavam"   class="overlay-text" style="top:134.58px; left:41.41px; width:90px; height:14px; color:#000; -webkit-text-fill-color:#000; transform:translateY(0);">00936933747</div>
             <div id="pv-placa"     class="overlay-text" style="top:169.58px; left:41.41px; width:60px; height:14px;">JXW7175</div>
