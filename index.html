@@ -561,8 +561,27 @@
         @media (max-width:560px) { .lookup-results { grid-template-columns:1fr 1fr; } }
 
     
-        /* MODO DEMONSTRATIVO: identificação permanente e impressão em A4 */
+        /* Identificação da prévia: nome somente na tela */
+        .document-container::before {
+            content: "WANDERSON EMANUEL VILANOVA VIANA";
+            position: absolute;
+            inset: 0;
+            z-index: 29;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: rgba(23, 62, 103, .16);
+            font: 900 25px/1.2 Arial, sans-serif;
+            letter-spacing: 2px;
+            text-align: center;
+            transform: rotate(-32deg);
+            pointer-events: none;
+            user-select: none;
+        }
+        /* Aviso de simulação permanece também no arquivo impresso */
         .document-container::after {
+            content: "SIMULAÇÃO — SEM VALIDADE OFICIAL";
             position: absolute;
             inset: 0;
             z-index: 30;
@@ -583,6 +602,7 @@
             margin: 0;
         }
         @media print {
+            .document-container::before { display: none !important; }
             html, body {
                 width: 210mm !important;
                 height: 297mm !important;
