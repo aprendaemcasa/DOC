@@ -660,10 +660,15 @@
             }
         }
 
-        /* ABA AUTO: layout responsivo e organizado */
+        /* ABA AUTO: espaço adequado em telas grandes e leitura confortável no celular */
+        .sidebar:has(.section-tab[data-panel="auto"].active) {
+            width: min(760px, 66vw);
+            flex: 0 0 min(760px, 66vw);
+            transition: width .2s ease;
+        }
         #form-fields:has(.field-panel[data-panel-content="auto"].active) {
             display: grid;
-            grid-template-columns: minmax(260px, .85fr) minmax(320px, 1.15fr);
+            grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
             align-items: start;
             gap: 14px;
         }
@@ -675,12 +680,9 @@
         #form-fields:has(.field-panel[data-panel-content="auto"].active) .lookup-panel {
             box-sizing: border-box;
             width: 100%;
-            padding: 16px !important;
-            border-radius: 12px;
-        }
-        #form-fields:has(.field-panel[data-panel-content="auto"].active) .lookup-help {
-            line-height: 1.45;
-            margin: 5px 0 10px;
+            padding: 14px !important;
+            border: 1px solid #dbe3ee;
+            border-radius: 10px;
         }
         #form-fields:has(.field-panel[data-panel-content="auto"].active) #autofill-text {
             box-sizing: border-box;
@@ -691,70 +693,53 @@
         #form-fields:has(.field-panel[data-panel-content="auto"].active) #lookup-report {
             box-sizing: border-box;
             width: 100%;
-            height: 145px !important;
-            min-height: 145px !important;
+            height: 130px !important;
+            min-height: 130px !important;
         }
         #form-fields:has(.field-panel[data-panel-content="auto"].active) #lookup-summary {
             box-sizing: border-box;
             width: 100%;
-            height: 190px !important;
-            min-height: 190px !important;
+            height: 170px !important;
+            min-height: 170px !important;
+        }
+        #form-fields:has(.field-panel[data-panel-content="auto"].active) .lookup-help {
+            line-height: 1.4;
+            margin: 6px 0 9px;
         }
         #form-fields:has(.field-panel[data-panel-content="auto"].active) .lookup-panel h4 {
             margin: 12px 0 6px !important;
             line-height: 1.35;
         }
-        #form-fields:has(.field-panel[data-panel-content="auto"].active) .lookup-panel button,
-        #form-fields:has(.field-panel[data-panel-content="auto"].active) .btn-save {
-            min-height: 42px;
-        }
-        @media (max-width: 760px) {
+        @media (max-width: 900px) {
+            .sidebar:has(.section-tab[data-panel="auto"].active) {
+                width: 100vw;
+                flex: 0 0 100vw;
+            }
             #form-fields:has(.field-panel[data-panel-content="auto"].active) {
                 grid-template-columns: minmax(0, 1fr);
-                gap: 12px;
-            }
-            #form-fields:has(.field-panel[data-panel-content="auto"].active) .field-panel,
-            #form-fields:has(.field-panel[data-panel-content="auto"].active) .lookup-panel {
-                padding: 14px !important;
+                gap: 10px;
             }
             #form-fields:has(.field-panel[data-panel-content="auto"].active) #autofill-text {
-                height: 150px !important;
-                min-height: 150px !important;
+                height: 145px !important;
+                min-height: 145px !important;
             }
             #form-fields:has(.field-panel[data-panel-content="auto"].active) #lookup-report {
                 height: 125px !important;
                 min-height: 125px !important;
             }
             #form-fields:has(.field-panel[data-panel-content="auto"].active) #lookup-summary {
-                height: 165px !important;
-                min-height: 165px !important;
+                height: 155px !important;
+                min-height: 155px !important;
             }
         }
-        /* PAINÉIS COMPACTOS: melhor aproveitamento da tela */
-        .sidebar { padding: 12px !important; }
-        .sidebar-header { padding: 12px !important; margin-bottom: 10px !important; }
-        .dashboard-summary { gap: 6px !important; margin-bottom: 10px !important; }
-        .summary-card { padding: 8px !important; }
-        .section-tabs { gap: 6px !important; margin-bottom: 10px !important; }
-        .section-tab { padding: 9px 8px !important; font-size: 11px !important; }
-        .field-panel, .lookup-panel { padding: 12px !important; margin-bottom: 10px !important; }
-        .field-panel h3, .lookup-panel h3 { font-size: 14px !important; margin-bottom: 9px !important; }
-        .field-subtitle { padding-top: 8px !important; margin-top: 2px !important; }
-        .field-grid { gap: 8px !important; }
-        .form-group input, .form-group textarea, .lookup-panel input {
-            padding: 8px !important; min-height: 35px !important; font-size: 12px !important;
-        }
-        #autofill-text { height: 150px !important; min-height: 150px !important; }
-        #lookup-report { height: 180px !important; min-height: 180px !important; }
-        .lookup-panel button, .btn-save { padding: 10px !important; font-size: 12px !important; }
-        .lookup-help { font-size: 11px !important; margin-bottom: 9px !important; }
-        .lookup-warning { padding: 8px !important; font-size: 10px !important; margin-top: 9px !important; }
-        @media (max-width: 560px) {
-            .sidebar { padding: 9px !important; }
-            .field-panel, .lookup-panel { padding: 10px !important; }
-            .section-tab { padding: 8px 6px !important; }
-            #autofill-text { height: 125px !important; min-height: 125px !important; }
-            #lookup-report { height: 150px !important; min-height: 150px !important; }
+        @media (max-width: 480px) {
+            .sidebar:has(.section-tab[data-panel="auto"].active) {
+                padding: 10px !important;
+            }
+            #form-fields:has(.field-panel[data-panel-content="auto"].active) .field-panel,
+            #form-fields:has(.field-panel[data-panel-content="auto"].active) .lookup-panel {
+                padding: 12px !important;
+            }
         }
 </style>
 </head>
