@@ -510,6 +510,14 @@
         }
 
 
+        .info-sheet-tools { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:14px 0 8px; }
+        .info-sheet-tools input[type="file"] { max-width:100%; font-size:12px; }
+        .info-sheet-tools button { width:auto; padding:9px 12px; }
+        .info-sheet-preview { position:relative; min-height:430px; margin-top:10px; padding:18px; overflow:hidden; border:1px solid #cbd5e1; border-radius:10px; background:#eaf0f6 center/cover no-repeat; }
+        .info-sheet-preview::before { content:""; position:absolute; inset:0; background:rgba(255,255,255,.2); pointer-events:none; }
+        .info-sheet-content { position:relative; z-index:1; }
+        .info-sheet-stamp { display:inline-block; margin-bottom:12px; padding:6px 9px; border:2px solid #b45309; border-radius:5px; color:#92400e; background:rgba(255,255,255,.9); font-size:11px; font-weight:900; letter-spacing:.06em; }
+        .info-sheet-preview textarea { display:block; width:100%; min-height:350px; padding:14px; resize:vertical; border:1px solid #cbd5e1; border-radius:8px; background:rgba(255,255,255,.9); color:#172338; font:12px/1.6 ui-monospace,Consolas,monospace; white-space:pre-wrap; }
         /* Consulta veicular independente — não altera a prévia do documento */
         .lookup-panel { display:none; background:#fff; border:1px solid var(--border); border-radius:12px; padding:17px; margin-bottom:14px; }
         .lookup-panel.active { display:block; }
@@ -600,6 +608,19 @@
             <h4 style="margin:16px 0 8px;color:#334155;font-size:12px;">Relatório da consulta — editável</h4>
             <p class="lookup-help">O relatório é gerado automaticamente com os dados veiculares e pode ser revisado e editado. Dados pessoais do proprietário são omitidos.</p>
             <textarea id="lookup-report" rows="22" spellcheck="false" aria-label="Relatório editável da consulta" placeholder="O relatório da consulta aparecerá aqui..." style="width:100%;min-height:360px;padding:12px;border:1px solid #cbd5e1;border-radius:8px;background:#fff;color:#172338;font:12px/1.55 ui-monospace,Consolas,monospace;resize:vertical;"></textarea>
+
+            <h4 style="margin:18px 0 8px;color:#334155;font-size:12px;">Visual da ficha informativa</h4>
+            <p class="lookup-help">Escolha uma imagem do seu computador para usar como fundo de uma ficha informativa independente. A imagem fica apenas nesta visualização do navegador.</p>
+            <div class="info-sheet-tools">
+                <input id="info-sheet-image" type="file" accept="image/png,image/jpeg,image/webp" aria-label="Escolher imagem de fundo">
+                <button type="button" id="info-sheet-clear" onclick="limparFundoFicha()">REMOVER FUNDO</button>
+            </div>
+            <div id="info-sheet-preview" class="info-sheet-preview">
+                <div class="info-sheet-content">
+                    <div class="info-sheet-stamp">FICHA INFORMATIVA • NÃO OFICIAL</div>
+                    <textarea id="info-sheet-report" aria-label="Conteúdo da ficha informativa" spellcheck="false" placeholder="Consulte uma placa para montar a ficha informativa."></textarea>
+                </div>
+            </div>
 
             <div class="lookup-warning">Privacidade: esta tela não exibe nome, CPF/CNPJ, endereço ou dados do proprietário. O token digitado no navegador pode ser visto por quem usa as ferramentas de desenvolvedor/rede; para um site público, o mais seguro é usar um intermediário no servidor.</div>
         </section>
@@ -844,6 +865,35 @@ function downloadPDF() {
                 section.classList.toggle('active', section.dataset.panelContent === panel));
         }
 
+        // Fundo escolhido pelo usuário para a ficha informativa independente.
+        let infoSheetBackgroundUrl = null;
+        document.addEventListener('DOMContentLoaded', () => {
+            const picker = document.getElementById('info-sheet-image');
+            if (picker) picker.addEventListener('change', event => {
+                const file = event.target.files && event.target.files[0];
+                if (!file) return;
+                if (!['image/png','image/jpeg','image/webp'].includes(file.type)) {
+                    picker.value = '';
+                    alert('Escolha uma imagem PNG, JPG ou WEBP.');
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = () => {
+                    infoSheetBackgroundUrl = reader.result;
+                    const preview = document.getElementById('info-sheet-preview');
+                    if (preview) preview.style.backgroundImage = 'url("' + infoSheetBackgroundUrl + '")';
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+        function limparFundoFicha() {
+            infoSheetBackgroundUrl = null;
+            const picker = document.getElementById('info-sheet-image');
+            const preview = document.getElementById('info-sheet-preview');
+            if (picker) picker.value = '';
+            if (preview) preview.style.backgroundImage = '';
+        }
+
         // Consulta independente de dados técnicos — não preenche nem altera a prévia.
         async function consultarVeiculo() {
             const tokenEl = document.getElementById('lookup-token');
@@ -977,6 +1027,8 @@ function downloadPDF() {
                 const report = document.getElementById('lookup-report');
                 const textoRelatorio = reportLines.join('\n');
                 if (report) report.value = textoRelatorio;
+                const sheetReport = document.getElementById('info-sheet-report');
+                if (sheetReport) sheetReport.value = textoRelatorio;
                 status.textContent = 'Consulta concluída. Relatório exibido no painel à direita. ' + campos.length + ' informações encontradas.';
             } catch (error) {
                 status.textContent = 'Não foi possível concluir a consulta: ' + (error?.message || 'erro desconhecido') + ' Verifique o token, a placa e a disponibilidade da API.';
