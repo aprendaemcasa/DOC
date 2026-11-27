@@ -1469,50 +1469,66 @@ function downloadPDF() {
             return str;
         }
 
-        // Gera somente uma ficha técnica informativa a partir do texto colado.
-        // Não altera campos nem a prévia do documento.
+        // Gera uma ficha técnica informativa independente.
+        // Não preenche a prévia de documento oficial nem exibe dados pessoais/identificadores.
         function gerarResumoTecnico() {
             const raw = document.getElementById('autofill-text')?.value || '';
             const data = parseAutoFillText(raw);
             const get = (...keys) => getData(data, keys);
-            const anoFabMod = get('ANO FAB/MOD', 'ANO FAB MOD', 'ANO FABRICACAO/MODELO');
+            const anoFabMod = get('ANO FAB/MOD', 'ANO FAB MOD', 'ANO FABRICACAO/MODELO', 'ANO FABRICACAO E MODELO');
             let anoFab = get('ANO FABRICACAO', 'ANO DE FABRICACAO', 'ANO FAB');
             let anoMod = get('ANO MODELO', 'ANO MOD');
             if (anoFabMod) {
-                const parts = anoFabMod.split(/\s*[\/-]\s*/);
+                const parts = anoFabMod.split(/\\s*[\\/-]\\s*/);
                 anoFab = anoFab || parts[0] || '';
                 anoMod = anoMod || parts[1] || '';
             }
-            const especie = get('ESPECIE TIPO', 'ESPECIE/TIPO', 'ESPECIE');
+            const especie = get('ESPECIE', 'ESPECIE VEICULO');
             const tipo = get('TIPO VEICULO', 'TIPO DE VEICULO', 'TIPO');
-            const especieTipo = [especie, tipo].filter(Boolean).join(' / ') || get('ESPECIE TIPO');
+            const especieTipo = [especie, tipo].filter(Boolean).join(' / ') || get('ESPECIE TIPO', 'ESPECIE/TIPO');
+            const potencia = get('POTENCIA/CILINDRADA', 'POTENCIA CILINDRADA', 'POTENCIA', 'POT');
+            const cilindrada = get('CILINDRADA', 'CILINDRADAS', 'CILINDRADA CC', 'CC');
+            const potenciaCilindrada = potencia && cilindrada
+                ? (potencia.includes('/') ? potencia : potencia + ' / ' + cilindrada)
+                : (potencia || cilindrada);
+            const cidadeUf = get('CIDADE/UF', 'MUNICIPIO/UF', 'MUNICIPIO', 'LOCAL DE EMISSAO', 'EMPLACAMENTO');
             const linhas = [
-                ['⚙️ RENAVAM', get('RENAVAM', 'CODIGO RENAVAM')],
-                ['⚠️ PLACA', get('PLACA')],
-                ['🏭 ANO FABRICAÇÃO', anoFab],
-                ['🏭 ANO MODELO', anoMod],
-                ['✅ MARCA / MODELO', get('MARCA MODELO', 'MARCA/MODELO', 'DESCRICAO MARCA MODELO', 'MARCA', 'MODELO')],
-                ['🚙 ESPÉCIE / TIPO', especieTipo],
-                ['🔧 CHASSI', get('CHASSI', 'NUMERO CHASSI')],
-                ['🎨 COR', get('COR', 'COR PREDOMINANTE')],
-                ['⛽ COMBUSTÍVEL', get('COMBUSTIVEL', 'COMBUSTIVEL VEICULO')],
-                ['📂 CATEGORIA', get('CATEGORIA')],
-                ['⚡ CILINDRADA', get('CILINDRADA', 'CILINDRADAS', 'CILINDRADA CC', 'CC')],
-                ['💪 POTÊNCIA', get('POTENCIA', 'POTENCIA CV')],
-                ['🔩 MOTOR', get('MOTOR', 'NUMERO MOTOR', 'NUM MOTOR')],
-                ['👥 LOTAÇÃO', get('LOTACAO', 'QUANTIDADE DE PASSAGEIROS', 'CAPACIDADE PASSAGEIROS')],
-                ['🧳 CARROCERIA', get('CARROCERIA', 'TIPO CARROCERIA')]
+                ['MARCA / MODELO', get('MARCA MODELO', 'MARCA/MODELO', 'DESCRICAO MARCA MODELO', 'MARCA E MODELO')],
+                ['ANO DE FABRICAÇÃO', anoFab],
+                ['ANO DO MODELO', anoMod],
+                ['ESPÉCIE / TIPO', especieTipo],
+                ['COR PREDOMINANTE', get('COR', 'COR PREDOMINANTE')],
+                ['COMBUSTÍVEL', get('COMBUSTIVEL', 'COMBUSTIVEL VEICULO')],
+                ['CATEGORIA DE USO', get('CATEGORIA', 'CATEGORIA USO')],
+                ['CAPACIDADE', get('CAPACIDADE', 'CAPACIDADE PASSAGEIROS')],
+                ['POTÊNCIA / CILINDRADA', potenciaCilindrada],
+                ['PESO BRUTO TOTAL', get('PESO BRUTO TOTAL', 'PBT', 'PESO BRUTO')],
+                ['MOTOR — DESCRIÇÃO TÉCNICA', get('MOTOR', 'TIPO MOTOR')],
+                ['CMT', get('CMT')],
+                ['EIXOS', get('EIXOS', 'NUMERO DE EIXOS')],
+                ['LOTAÇÃO', get('LOTACAO', 'QUANTIDADE DE PASSAGEIROS', 'CAPACIDADE PASSAGEIROS')],
+                ['CARROCERIA', get('CARROCERIA', 'TIPO CARROCERIA')],
+                ['MUNICÍPIO / UF DE REFERÊNCIA', cidadeUf],
+                ['DATA DE REFERÊNCIA', get('DATA EMISSAO', 'DATA DE EMISSAO', 'DATA')],
+                ['OBSERVAÇÕES TÉCNICAS', get('OBSERVACOES', 'OBSERVACAO', 'OBSERVACOES DO VEICULO')]
             ];
             const resumo = document.getElementById('lookup-summary');
+            if (!raw.trim()) {
+                if (resumo) resumo.value = 'Cole os dados técnicos do veículo no campo acima e clique em GERAR FICHA TÉCNICA.';
+                const statusVazio = document.getElementById('lookup-status');
+                if (statusVazio) statusVazio.textContent = 'Nenhum dado foi informado.';
+                return;
+            }
             if (resumo) {
-                resumo.value = linhas.map(([label, value]) => label + ': ' + (String(value || '').trim() || 'Não informado')).join('\n')
-                    + '\n\nFICHA TÉCNICA INFORMATIVA — NÃO É DOCUMENTO OFICIAL.';
+                resumo.value = 'FICHA TÉCNICA INFORMATIVA DO VEÍCULO\\n\\n'
+                    + linhas.map(([label, value]) => label + ': ' + (String(value || '').trim() || 'Não informado')).join('\\n')
+                    + '\\n\\nDocumento informativo independente. Não é CRLV-e nem possui validade oficial.';
             }
             const status = document.getElementById('lookup-status');
-            if (status) status.textContent = 'Resumo técnico gerado com os dados encontrados no texto colado.';
+            if (status) status.textContent = 'Ficha técnica gerada. Os campos técnicos identificados foram organizados; dados ausentes aparecem como “Não informado”.';
             const toast = document.getElementById('autofill-toast');
             if (toast) {
-                toast.textContent = 'Resumo técnico gerado. Campos ausentes foram identificados.';
+                toast.textContent = 'Ficha técnica gerada com os campos técnicos disponíveis.';
                 toast.style.display = 'block';
                 setTimeout(() => { toast.style.display = 'none'; }, 3500);
             }
