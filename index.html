@@ -588,6 +588,19 @@
             </div>
         </section>
 
+        <section class="lookup-panel" data-panel-content="consulta">
+            <h3>Consulta de dados do veículo</h3>
+            <p class="lookup-help">Consulte características técnicas pela placa. Os resultados aparecem somente nesta área e não são enviados para os campos da prévia.</p>
+            <label for="lookup-token" style="display:block;font-size:10px;font-weight:800;color:#526176;">TOKEN FETCHBRASIL</label>
+            <input id="lookup-token" type="password" autocomplete="off" placeholder="Cole aqui seu novo token">
+            <label for="lookup-plate" style="display:block;font-size:10px;font-weight:800;color:#526176;">PLACA DO VEÍCULO</label>
+            <input id="lookup-plate" type="text" maxlength="7" autocomplete="off" placeholder="Ex.: ABC1D23">
+            <button type="button" id="lookup-button" onclick="consultarVeiculo()">CONSULTAR PLACA</button>
+            <div id="lookup-status" class="lookup-status" role="status" aria-live="polite"></div>
+            <div id="lookup-results" class="lookup-results"></div>
+            <div class="lookup-warning">Privacidade: esta tela não exibe nome, CPF/CNPJ, endereço ou dados do proprietário. O token digitado no navegador pode ser visto por quem usa as ferramentas de desenvolvedor/rede; para um site público, o mais seguro é usar um intermediário no servidor.</div>
+        </section>
+
         <section class="field-panel active" data-panel-content="identificacao">
             <h3>Identificação do documento</h3>
             <div class="field-grid">
