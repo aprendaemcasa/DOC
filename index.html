@@ -509,6 +509,23 @@
             .document-container { flex: 0 0 794px; width: 794px; min-width: 794px; }
         }
 
+
+        /* Consulta veicular independente — não altera a prévia do documento */
+        .lookup-panel { display:none; background:#fff; border:1px solid var(--border); border-radius:12px; padding:17px; margin-bottom:14px; }
+        .lookup-panel.active { display:block; }
+        .lookup-panel h3 { margin:0 0 8px; color:var(--text); font-size:15px; }
+        .lookup-help { color:var(--muted); font-size:12px; line-height:1.5; margin:0 0 14px; }
+        .lookup-panel input { width:100%; min-height:40px; border:1px solid #cbd5e1; border-radius:8px; padding:10px; margin:5px 0 10px; }
+        .lookup-panel button { width:100%; border:0; border-radius:8px; background:var(--brand); color:white; font-weight:800; padding:12px; cursor:pointer; }
+        .lookup-panel button:disabled { opacity:.6; cursor:wait; }
+        .lookup-status { margin-top:10px; font-size:12px; color:#475569; line-height:1.5; }
+        .lookup-results { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+        .lookup-result { min-width:0; padding:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; }
+        .lookup-result span { display:block; color:#64748b; font-size:10px; font-weight:800; text-transform:uppercase; margin-bottom:4px; }
+        .lookup-result strong { display:block; color:#172338; font-size:13px; overflow-wrap:anywhere; }
+        .lookup-warning { margin-top:12px; padding:10px; border-radius:8px; background:#fff7ed; color:#9a3412; font-size:11px; line-height:1.5; }
+        @media (max-width:560px) { .lookup-results { grid-template-columns:1fr 1fr; } }
+
     </style>
 </head>
 <body>
@@ -553,6 +570,7 @@
             <button type="button" class="section-tab" data-panel="tecnico" onclick="showPanel('tecnico')">Técnico</button>
             <button type="button" class="section-tab" data-panel="proprietario" onclick="showPanel('proprietario')">Proprietário</button>
             <button type="button" class="section-tab" data-panel="auto" onclick="showPanel('auto')">Auto preencher</button>
+            <button type="button" class="section-tab" data-panel="consulta" onclick="showPanel('consulta')">Consultar veículo</button>
         </div>
         <div id="form-fields">
 
@@ -808,6 +826,82 @@ function downloadPDF() {
                 tab.classList.toggle('active', tab.dataset.panel === panel));
             document.querySelectorAll('.field-panel').forEach(section =>
                 section.classList.toggle('active', section.dataset.panelContent === panel));
+        }
+
+        // Consulta independente de dados técnicos — não preenche nem altera a prévia.
+        async function consultarVeiculo() {
+            const tokenEl = document.getElementById('lookup-token');
+            const plateEl = document.getElementById('lookup-plate');
+            const button = document.getElementById('lookup-button');
+            const status = document.getElementById('lookup-status');
+            const results = document.getElementById('lookup-results');
+            const token = (tokenEl?.value || '').trim();
+            const placa = (plateEl?.value || '').replace(/[^a-z0-9]/gi, '').toUpperCase();
+
+            results.replaceChildren();
+            if (!token) { status.textContent = 'Informe seu token FetchBrasil.'; tokenEl?.focus(); return; }
+            if (!/^[A-Z0-9]{7}$/.test(placa)) { status.textContent = 'Digite uma placa válida com 7 caracteres.'; plateEl?.focus(); return; }
+
+            button.disabled = true;
+            button.textContent = 'CONSULTANDO...';
+            status.textContent = 'Aguardando resposta da FetchBrasil...';
+            try {
+                const url = new URL('https://api.fetchbrasil.pro/');
+                url.searchParams.set('token', token);
+                url.searchParams.set('api', 'placa_serpro');
+                url.searchParams.set('query', placa);
+                const response = await fetch(url.toString(), { method: 'GET', headers: { 'Accept': 'application/json' } });
+                if (!response.ok) throw new Error('A API respondeu com HTTP ' + response.status + '.');
+                const payload = await response.json();
+
+                function localizarRegistro(obj, depth = 0) {
+                    if (!obj || typeof obj !== 'object' || depth > 4) return null;
+                    if (!Array.isArray(obj) && (obj.placa || obj.descricaoMarcaModelo || obj.anoModelo)) return obj;
+                    for (const value of Object.values(obj)) {
+                        const found = localizarRegistro(value, depth + 1);
+                        if (found) return found;
+                    }
+                    return null;
+                }
+                const registro = localizarRegistro(payload);
+                if (!registro) {
+                    const msg = payload?.mensagem || payload?.message || payload?.erro || 'A resposta não trouxe dados de veículo reconhecíveis.';
+                    throw new Error(String(msg));
+                }
+
+                const campos = [
+                    ['Placa', registro.placa],
+                    ['Marca / modelo', registro.descricaoMarcaModelo],
+                    ['Ano de fabricação', registro.anoFabricacao],
+                    ['Ano do modelo', registro.anoModelo],
+                    ['Cor', registro.descricaoCor],
+                    ['Combustível', registro.descricaoCombustivel],
+                    ['Tipo', registro.descricaoTipoVeiculo],
+                    ['Espécie', registro.descricaoEspecieVeiculo],
+                    ['Categoria', registro.descricaoCategoria],
+                    ['Potência', registro.potencia],
+                    ['Cilindradas', registro.cilindradas],
+                    ['Lotação', registro.lotacao]
+                ].filter(([, value]) => value !== undefined && value !== null && String(value).trim() !== '');
+
+                if (!campos.length) throw new Error('A consulta foi respondida, mas não há características disponíveis para exibir.');
+                for (const [label, value] of campos) {
+                    const card = document.createElement('div');
+                    card.className = 'lookup-result';
+                    const title = document.createElement('span');
+                    title.textContent = label;
+                    const content = document.createElement('strong');
+                    content.textContent = String(value);
+                    card.append(title, content);
+                    results.append(card);
+                }
+                status.textContent = 'Consulta concluída. ' + campos.length + ' informações encontradas.';
+            } catch (error) {
+                status.textContent = 'Não foi possível concluir a consulta: ' + (error?.message || 'erro desconhecido') + ' Verifique o token, a placa e a disponibilidade da API.';
+            } finally {
+                button.disabled = false;
+                button.textContent = 'CONSULTAR PLACA';
+            }
         }
 
         function updatePreview(id, val) {
