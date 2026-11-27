@@ -510,14 +510,31 @@
         }
 
 
-        .info-sheet-preview { position:relative; min-height:540px; margin-top:10px; padding:20px; overflow:hidden; border:2px solid #2563eb; border-radius:12px; background:#dbeafe !important; background-image:radial-gradient(circle at 90% 10%, rgba(14,165,233,.48) 0, transparent 34%), radial-gradient(circle at 8% 88%, rgba(13,148,136,.38) 0, transparent 38%), linear-gradient(135deg, #eff6ff 0%, #bfdbfe 48%, #d1fae5 100%) !important; background-position:center !important; background-size:cover !important; background-repeat:no-repeat !important; }
-        .info-sheet-content { position:relative; z-index:1; padding:16px; border:1px solid rgba(37,99,235,.22); border-radius:8px; background:rgba(255,255,255,.48); }
+        .info-sheet-preview {
+            position:relative; isolation:isolate; min-height:540px; margin-top:10px; padding:22px;
+            overflow:hidden; border:0; border-radius:16px;
+            background-color:#12345a !important;
+            background-image:
+                radial-gradient( circle at 88% 12%, rgba(56,189,248,.95) 0, rgba(56,189,248,.12) 25%, transparent 38%),
+                radial-gradient( circle at 12% 88%, rgba(45,212,191,.75) 0, rgba(45,212,191,.10) 28%, transparent 42%),
+                linear-gradient(135deg, #102a43 0%, #174b72 52%, #0f766e 100%) !important;
+            background-position:center !important; background-size:cover !important; background-repeat:no-repeat !important;
+            box-shadow:0 16px 36px rgba(15,35,60,.20);
+        }
+        .info-sheet-preview::before {
+            content:""; position:absolute; z-index:-1; inset:0; opacity:.32; pointer-events:none;
+            background-image:repeating-linear-gradient(135deg, transparent 0 22px, rgba(255,255,255,.16) 23px 24px, transparent 25px 48px);
+        }
+        .info-sheet-content {
+            position:relative; z-index:1; padding:18px; border:1px solid rgba(255,255,255,.38);
+            border-radius:12px; background:rgba(255,255,255,.16); backdrop-filter:blur(3px);
+        }
         .info-sheet-header { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; padding-bottom:12px; border-bottom:2px solid #173e67; }
         .info-sheet-header h3 { margin:8px 0 3px; color:#173e67; font-size:17px; letter-spacing:.04em; }
         .info-sheet-header p { margin:0; color:#64748b; font-size:11px; }
         .info-sheet-stamp { display:inline-block; padding:5px 8px; border:1px solid #b45309; border-radius:4px; color:#92400e; background:#fff7ed; font-size:10px; font-weight:900; letter-spacing:.05em; }
         .info-sheet-mark { padding:6px 9px; border-radius:5px; color:#fff; background:#173e67; font-size:10px; font-weight:800; }
-        .info-sheet-preview textarea { display:block; width:100%; min-height:390px; margin-top:14px; padding:14px; resize:vertical; border:1px solid #d4dce7; border-radius:7px; background:rgba(255,255,255,.72); color:#172338; font:12px/1.6 ui-monospace,Consolas,monospace; white-space:pre-wrap; }
+        .info-sheet-preview textarea { display:block; width:100%; min-height:390px; margin-top:14px; padding:14px; resize:vertical; border:1px solid #d4dce7; border-radius:7px; background:rgba(255,255,255,.88); color:#172338; font:12px/1.6 ui-monospace,Consolas,monospace; white-space:pre-wrap; }
         .info-sheet-footer { margin-top:10px; padding-top:8px; border-top:1px solid #cbd5e1; color:#64748b; font-size:9px; font-weight:800; letter-spacing:.04em; text-align:center; }
         /* Consulta veicular independente — não altera a prévia do documento */
         .lookup-panel { display:none; background:#fff; border:1px solid var(--border); border-radius:12px; padding:17px; margin-bottom:14px; }
