@@ -837,7 +837,7 @@ function downloadPDF() {
         function showPanel(panel) {
             document.querySelectorAll('.section-tab').forEach(tab =>
                 tab.classList.toggle('active', tab.dataset.panel === panel));
-            document.querySelectorAll('.field-panel').forEach(section =>
+            document.querySelectorAll('.field-panel, .lookup-panel').forEach(section =>
                 section.classList.toggle('active', section.dataset.panelContent === panel));
         }
 
