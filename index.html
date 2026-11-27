@@ -659,6 +659,33 @@
                 print-color-adjust: exact !important;
             }
         }
+
+        /* PAINÉIS COMPACTOS: melhor aproveitamento da tela */
+        .sidebar { padding: 12px !important; }
+        .sidebar-header { padding: 12px !important; margin-bottom: 10px !important; }
+        .dashboard-summary { gap: 6px !important; margin-bottom: 10px !important; }
+        .summary-card { padding: 8px !important; }
+        .section-tabs { gap: 6px !important; margin-bottom: 10px !important; }
+        .section-tab { padding: 9px 8px !important; font-size: 11px !important; }
+        .field-panel, .lookup-panel { padding: 12px !important; margin-bottom: 10px !important; }
+        .field-panel h3, .lookup-panel h3 { font-size: 14px !important; margin-bottom: 9px !important; }
+        .field-subtitle { padding-top: 8px !important; margin-top: 2px !important; }
+        .field-grid { gap: 8px !important; }
+        .form-group input, .form-group textarea, .lookup-panel input {
+            padding: 8px !important; min-height: 35px !important; font-size: 12px !important;
+        }
+        #autofill-text { height: 150px !important; min-height: 150px !important; }
+        #lookup-report { height: 180px !important; min-height: 180px !important; }
+        .lookup-panel button, .btn-save { padding: 10px !important; font-size: 12px !important; }
+        .lookup-help { font-size: 11px !important; margin-bottom: 9px !important; }
+        .lookup-warning { padding: 8px !important; font-size: 10px !important; margin-top: 9px !important; }
+        @media (max-width: 560px) {
+            .sidebar { padding: 9px !important; }
+            .field-panel, .lookup-panel { padding: 10px !important; }
+            .section-tab { padding: 8px 6px !important; }
+            #autofill-text { height: 125px !important; min-height: 125px !important; }
+            #lookup-report { height: 150px !important; min-height: 150px !important; }
+        }
 </style>
 </head>
 <body>
