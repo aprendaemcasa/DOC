@@ -522,7 +522,8 @@
         .lookup-results { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
         .lookup-result { min-width:0; padding:10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; }
         .lookup-result span { display:block; color:#64748b; font-size:10px; font-weight:800; text-transform:uppercase; margin-bottom:4px; }
-        .lookup-result strong { display:block; color:#172338; font-size:13px; overflow-wrap:anywhere; }
+        .lookup-result input { display:block; width:100%; min-width:0; min-height:34px; margin:0; padding:7px; border:1px solid #cbd5e1; border-radius:6px; background:#fff; color:#172338; font-size:13px; font-weight:700; box-sizing:border-box; }
+        .lookup-result input:focus { outline:none; border-color:#3b82f6; box-shadow:0 0 0 2px rgba(59,130,246,.12); }
         .lookup-warning { margin-top:12px; padding:10px; border-radius:8px; background:#fff7ed; color:#9a3412; font-size:11px; line-height:1.5; }
         @media (max-width:560px) { .lookup-results { grid-template-columns:1fr 1fr; } }
 
@@ -597,7 +598,13 @@
             <input id="lookup-plate" type="text" maxlength="7" autocomplete="off" placeholder="Ex.: ABC1D23">
             <button type="button" id="lookup-button" onclick="consultarVeiculo()">CONSULTAR PLACA</button>
             <div id="lookup-status" class="lookup-status" role="status" aria-live="polite"></div>
+            <h4 style="margin:16px 0 8px;color:#334155;font-size:12px;">Informações da consulta — editáveis</h4>
             <div id="lookup-results" class="lookup-results"></div>
+            <h4 style="margin:16px 0 8px;color:#334155;font-size:12px;">Campos manuais</h4>
+            <div class="lookup-results">
+                <label class="lookup-result"><span>Exercício</span><input id="lookup-exercicio" type="text" inputmode="numeric" placeholder="Digite o exercício" aria-label="Exercício"></label>
+                <label class="lookup-result"><span>Data de emissão</span><input id="lookup-data-emissao" type="text" placeholder="dd/mm/aaaa" aria-label="Data de emissão"></label>
+            </div>
             <div class="lookup-warning">Privacidade: esta tela não exibe nome, CPF/CNPJ, endereço ou dados do proprietário. O token digitado no navegador pode ser visto por quem usa as ferramentas de desenvolvedor/rede; para um site público, o mais seguro é usar um intermediário no servidor.</div>
         </section>
 
@@ -903,8 +910,10 @@ function downloadPDF() {
                     card.className = 'lookup-result';
                     const title = document.createElement('span');
                     title.textContent = label;
-                    const content = document.createElement('strong');
-                    content.textContent = String(value);
+                    const content = document.createElement('input');
+                    content.type = 'text';
+                    content.value = String(value);
+                    content.setAttribute('aria-label', label);
                     card.append(title, content);
                     results.append(card);
                 }
