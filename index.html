@@ -982,7 +982,7 @@ function downloadPDF() {
                     'Recall 4: ' + get('recall4')
                 ];
                 const report = document.getElementById('lookup-report');
-                if (report) report.value = reportLines.join('\\n');
+                if (report) report.value = reportLines.join('\n');
 
                 status.textContent = 'Consulta concluída. ' + campos.length + ' informações encontradas.';
             } catch (error) {
